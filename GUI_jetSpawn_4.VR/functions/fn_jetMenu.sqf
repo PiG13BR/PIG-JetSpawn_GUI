@@ -18,6 +18,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////// JET SPAWN & LOADOUT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Check area for objects (lifted from VVS)
+_spCheck = nearestObjects [getMarkerPos "spawn_jet", ["landVehicle", "Air", "Man"], 12];
+if(count _spCheck > 0) exitWith {systemChat "Something is obstructing the jet spawn point"};
+
 createDialog "PIG_RscJetMenu";
 
 _aircrafts = call compile preprocessFileLineNumbers "aircraft_presets.sqf";
@@ -91,7 +95,7 @@ PIG_fnc_spawnLocalJet = {
 	_vehicle
 };
 
-// Init camera and delete placeholder
+// Init camera
 [_placeholder] call PIG_fnc_cameraAngle;
 
 // Create lightsoruce (lifted from arsenal.sqf)
@@ -100,7 +104,7 @@ _light = "#lightpoint" createvehicleLocal (getPosATL _placeholder);
 _light setlightbrightness _intensity;
 _light setlightambient [1, 1, 1];
 _light setlightcolor [0, 0, 0];
-_light lightattachobject [_placeholder,[0, 0, -_intensity * 7]];
+_light lightattachobject [_placeholder, [0, 0, -_intensity * 7]];
 _light setLightDayLight false;
 
 uiNamespace setvariable ["PIG_jetMenu_LightSource", _light];
@@ -212,10 +216,12 @@ uiNamespace setvariable ["PIG_jetMenu_LightSource", _light];
 (displayCtrl 1600) ctrlAddEventHandler ["ButtonClick", {
 
 	if ((localNameSpace getVariable "PIG_airCraftSelected") isEqualTo "") exitWith {systemChat "No Aircraft Selected"};
+	_spawnPos = getMarkerPos "spawn_jet";
 
 	// Spawning the jet
 	private _vehicleClass = localNameSpace getVariable "PIG_airCraftSelected";
-	private _vehicle = createVehicle [_vehicleClass, position player, [], 50, "NONE"];
+	private _vehicle = createVehicle [_vehicleClass, _spawnPos, [], 0, "CAN_COLLIDE"];
+	_vehicle setDir (markerDir "spawn_jet");
 
 	// Setting up the jet
 	private _pylonsInfo = getAllPylonsInfo _vehicle select { (_x select 3) isNotEqualTo "" };
