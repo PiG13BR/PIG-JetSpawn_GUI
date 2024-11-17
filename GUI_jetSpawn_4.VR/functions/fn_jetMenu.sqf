@@ -367,7 +367,6 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 	// Profile presets
 	private _profilePresets = (profileNamespace getVariable "PIG_JetMenu_profilePresets");
 	if (_key in _profilePresets) then {
-		hint str _profilePresets;
 		private _pylonsProfile = ((_profilePresets get _key) # 1); // # 1 = array that cointains the magazines in order
 		{
 			if (_x isEqualTo "") then {
@@ -420,7 +419,6 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 	private _key = (ctrlText 1400);
 	// Get profile hashmap
 	private _profilePresets = (profileNamespace getVariable "PIG_JetMenu_profilePresets");
-	hint str _profilePresets;
 	// Check for similar names/key in presets
 	if ((_key in _profilePresets) || {_key in PIG_JetMenu_cfgPresets}) exitWith {systemChat format ["[ERROR] This name %1 already exist in the preset", str _key]};
 
