@@ -1,7 +1,20 @@
 player addAction ["Open Jet Spawn Menu", {
 	
 	[] call PIG_fnc_jetMenu;
-}];
+	},	
+	nil,
+	1.5,
+	true,
+	true,
+	"",
+	toString {
+		(isNull (objectParent _originalTarget)) 
+	},
+	20,
+	false,
+	"",
+	""
+];
 
 // View distance
 player addAction [["<t size='1.1' color='#E99B00'>", "Change View Distance", "</t>"] joinString "", {
