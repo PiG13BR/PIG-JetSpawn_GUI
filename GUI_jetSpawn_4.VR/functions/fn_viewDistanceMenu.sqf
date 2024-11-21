@@ -1,3 +1,20 @@
+/*
+	File: fn_viewDistanceMenu.sqf
+	Author: PiG13BR - https://github.com/PiG13BR
+	Date: 2024/31/10
+	Last Update: 2024/04/10
+	License: MIT License - http://www.opensource.org/licenses/MIT
+
+	Description:
+		Manages the view distance slider bar and toggle it when moved by the player
+
+	Parameter(s):
+		-
+	
+	Returns:
+		-
+*/
+
 createDialog "PIG_RscViewDistance";
 
 // Get video setting values when open dialog
