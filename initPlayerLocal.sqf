@@ -1,5 +1,4 @@
-player addAction ["Open Jet Spawn Menu", {
-	
+player addAction [format ["<img size='2' image='a3\air_f_jets\plane_fighter_01\data\ui\fighter01_icon_ca.paa'/><t size='1.3' color='#EFF700'>Open Jet Menu Spawn</t>"], {
 	[] call PIG_fnc_jetMenu;
 	},	
 	nil,
