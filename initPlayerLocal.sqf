@@ -17,7 +17,7 @@ player addAction [format ["<img size='2' image='a3\air_f_jets\plane_fighter_01\d
 ];
 
 // View distance
-player addAction [format ["<t size='1.1' color='#E99B00'>"Change View Distance</t>"], {
+player addAction [format ["<t size='1.1' color='#E99B00'>Change View Distance</t>"], {
 	params ["_target", "_caller", "_actionId", "_arguments"];
 
 	[] call PIG_fnc_setViewDistance;
