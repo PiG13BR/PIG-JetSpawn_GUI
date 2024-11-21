@@ -24,7 +24,7 @@ if(count _spCheck > 0) exitWith {systemChat "Something is obstructing the jet sp
 
 createDialog "PIG_RscJetMenu";
 
-_aircrafts = call compile preprocessFileLineNumbers "aircraft_presets.sqf";
+_aircrafts = call compile preprocessFileLineNumbers "aircraft_preset.sqf";
 
 localNameSpace setVariable ["PIG_airCraftSelected", ""];
 localNameSpace setVariable ["PIG_airCraftPylonLb", -1];
