@@ -1,0 +1,4 @@
+- Put the files in your mission.
+- In the editor, place an empty marker where you want the jet to spawn and name it "spawn_jet".
+- In the aircraft_preset.sqf put the classnames of the aircrafts you want to spawn. It can be jets and helicopters.
+- You can edit the aircraft's hardpoints (pylons) before spawning it.
