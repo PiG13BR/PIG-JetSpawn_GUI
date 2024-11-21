@@ -1,0 +1,17 @@
+#include "ui\defines.hpp"
+#include "ui\jet_menu.hpp"
+#include "ui\viewDistance_menu.hpp"
+
+class CfgFunctions
+{
+	class PIG
+	{
+		class functions {
+			file = "functions";
+			
+			class jetMenu {};
+			class cameraAngle {};
+			class viewDistanceMenu {};
+		}
+	}
+}
