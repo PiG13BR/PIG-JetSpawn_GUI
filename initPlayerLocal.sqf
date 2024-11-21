@@ -8,7 +8,8 @@ player addAction ["Open Jet Spawn Menu", {
 	true,
 	"",
 	toString {
-		(isNull (objectParent _originalTarget)) 
+		(isNull (objectParent _originalTarget))
+		&& {markerPos "spawn_jet" distance _originalTarget < 30} 
 	},
 	20,
 	false,
