@@ -236,16 +236,10 @@ uiNamespace setvariable ["PIG_jetMenu_LightSource", _light];
 
 	{
 		_magazine = PIG_jetLoadout select (_forEachIndex);
-
 		_bool = _vehicle setPylonLoadout [_x, _magazine, true];
-		if (_magazine isEqualTo "") then {
-			//systemChat format ["[MUNIÇÃO] Pylon %1 não carregado", _x];
-		} else {
-			//systemChat format ["[MUNIÇÃO] Pylon %1 está armado com %2", _x, _magazine];
-		}
 	}forEach _pylonsIndices;
 
-	closeDialog 0; //cutText ['', 'BLACK IN'];
+	closeDialog 0;
 
 }];
 
