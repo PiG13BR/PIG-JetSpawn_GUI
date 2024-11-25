@@ -19,8 +19,12 @@
 //////// JET SPAWN & LOADOUT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Check area for objects (lifted from VVS)
-_spCheck = nearestObjects [getMarkerPos "spawn_jet", ["landVehicle", "Air", "Man"], 12];
-if(count _spCheck > 0) exitWith {systemChat "Something is obstructing the jet spawn point"};
+_spCheck = nearestObjects [markerPos ["spawn_jet", true], ["landVehicle", "Air", "Man"], 12];
+
+if((count _spCheck > 0) && {isMultiplayer}) exitWith {systemChat "Something is obstructing the jet spawn point"};
+if((count _spCheck > 0) && {!isMultiplayer}) then{
+	{deleteVehicle _x}forEach _spCheck;
+};
 
 createDialog "PIG_RscJetMenu";
 
