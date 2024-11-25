@@ -2,3 +2,4 @@
 - In the editor, place an empty marker where you want the jet to spawn and name it "spawn_jet".
 - In the aircraft_preset.sqf put the classnames of the aircrafts you want to spawn. It can be jets and helicopters.
 - You can edit the aircraft's hardpoints (pylons) before spawning it.
+- Working on SP/MP/Dedicated. For singeplayer, any objects or the jet/helicopter itself in the spawn point will be deleted if the menu is opened again after spawning a jet. In multiplayer, it blocks the player for opening the menu instead.
