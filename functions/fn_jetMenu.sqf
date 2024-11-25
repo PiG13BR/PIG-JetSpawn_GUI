@@ -30,7 +30,8 @@ localNameSpace setVariable ["PIG_airCraftSelected", ""];
 localNameSpace setVariable ["PIG_airCraftPylonLb", -1];
 
 // Create placeholder object for camera at start
-_placeholder = createVehicleLocal ["Sign_Arrow_Large_Blue_F", getMarkerPos "spawn_jet", [], 0, "CAN_COLLIDE"];
+_placeholder = createVehicleLocal ["Sign_Arrow_Large_Blue_F", markerPos ["spawn_jet", true], [], 0, "CAN_COLLIDE"];
+_placeholder setVehiclePosition [(markerPos ["spawn_jet", true]), [], 0, "CAN_COLLIDE"];
 _placeholder setDir (markerDir "spawn_jet");
 hideObject _placeholder;
 uiNamespace setVariable ["PIG_JetMenu_placeholder", _placeholder];
@@ -84,7 +85,8 @@ PIG_fnc_spawnLocalJet = {
 	// Delete local vehicle if already exists
 	if (!isNil {uiNamespace getVariable "PIG_JetMenu_vehicleLocal"}) then {deleteVehicle (uiNamespace getVariable "PIG_JetMenu_vehicleLocal")};
 
-	_vehicle = createVehicleLocal [_aircraftClass, (getMarkerPos "spawn_jet"), [], 0, "CAN_COLLIDE"];
+	_vehicle = createVehicleLocal [_aircraftClass, (markerPos ["spawn_jet", true]), [], 0, "CAN_COLLIDE"];
+	_vehicle setVehiclePosition [(markerPos ["spawn_jet", true]), [], 0, "CAN_COLLIDE"];
 	_vehicle setDir (markerDir "spawn_jet");
 	uiNamespace setVariable ["PIG_JetMenu_vehicleLocal", _vehicle];
 
@@ -216,11 +218,12 @@ uiNamespace setvariable ["PIG_jetMenu_LightSource", _light];
 (displayCtrl 1600) ctrlAddEventHandler ["ButtonClick", {
 
 	if ((localNameSpace getVariable "PIG_airCraftSelected") isEqualTo "") exitWith {systemChat "No Aircraft Selected"};
-	_spawnPos = getMarkerPos "spawn_jet";
+	_spawnPos = markerPos ["spawn_jet", true];
 
 	// Spawning the jet
 	private _vehicleClass = localNameSpace getVariable "PIG_airCraftSelected";
 	private _vehicle = createVehicle [_vehicleClass, _spawnPos, [], 0, "CAN_COLLIDE"];
+	_vehicle setVehiclePosition [_spawnPos, [], 0, "CAN_COLLIDE"];
 	_vehicle setDir (markerDir "spawn_jet");
 
 	// Setting up the jet
