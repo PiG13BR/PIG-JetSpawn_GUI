@@ -2,7 +2,7 @@
 	File: fn_jetMenu.sqf
 	Author: PiG13BR - https://github.com/PiG13BR
 	Date: 2024/31/10
-	Last Update: 2024/21/11
+	Last Update: 2024/25/11
 	License: MIT License - http://www.opensource.org/licenses/MIT
 
 	Description:
@@ -47,18 +47,23 @@ uiNamespace setVariable ["PIG_JetMenu_placeholder", _placeholder];
 	lbSetData [1500, _forEachIndex, _x]
 }forEach _aircrafts;
 
-// Reload preset list box function
+// Resets the pylon configuration
+PIG_fnc_reloadLoadout = {
+	params["_aircraftClass"];
+
+	_originalCount = count PIG_jetLoadout;
+	PIG_jetLoadout = [];
+	
+	for "_i" from 1 to _originalCount do {
+			PIG_jetLoadout pushBack ""; // Restore default pylon slots
+	};
+};
+
+// Reload preset list box function 
 PIG_fnc_reloadPresetsLb = {
 	params["_aircraftClass"];
 
 	lbClear 1503; // Clear the list box
-
-	_originalCount = count PIG_jetLoadout;
-	
-	PIG_jetLoadout = [];
-	for "_i" from 1 to _originalCount do {
-			PIG_jetLoadout pushBack ""; // Restore default pylon slots
-	};
 
 	// Get cfg preset for this aircraft
 	private _presetCfgPaths = configProperties [configFile >> "CfgVehicles" >> _aircraftClass >> "Components" >> "TransportPylonsComponent" >> "Presets", "isClass _x"];
@@ -68,7 +73,7 @@ PIG_fnc_reloadPresetsLb = {
 		lbAdd [1503, _presetName];
 		// Put the attachaments in a hashmap
 		_attachs = (getArray(_x >> "attachment"));
-		PIG_JetMenu_cfgPresets set [_presetName, _attachs];
+		PIG_JetMenu_cfgPresets set [tolowerANSI _presetName, _attachs];
 	}forEach _presetCfgPaths;
 
 	// Get pylon profile preset for this aircraft
@@ -81,6 +86,8 @@ PIG_fnc_reloadPresetsLb = {
 			lbAdd [1503, _x];
 		};
 	}forEach _profilePresets;
+
+	(displayCtrl 1503) lbSetCurSel 0;
 };
 
 // Spawn local jet function
@@ -153,6 +160,7 @@ uiNamespace setvariable ["PIG_jetMenu_LightSource", _light];
 		// Add empty strings for each pylon count. An empty string in this array means an empty pylon as default
 		for "_i" from 1 to _pylonCount do {
 			PIG_jetLoadout pushBack "";
+			
 			_vehicleLocal setPylonLoadout [_i, "", true]; // Set pylon empty
 		};
 
@@ -277,11 +285,20 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 	]
 */
 
+// Disable all right buttons (default)
+ctrlEnable [1601, false];	// Save
+ctrlEnable [1602, false];	// Load
+ctrlEnable [1603, false];	// Delete
+ctrlEnable [1604, false];	// Rename
+ctrlEnable [1605, false];	// Save new preset
+
 // List box with presets
 (displayCtrl 1503) ctrlAddEventHandler ["LBSelChanged", {
 	params ["_control", "_lbCurSel", "_lbSelection"];
 
 	if (_lbCurSel == -1) exitWith {};
+
+	ctrlEnable [1602, true]; // Enable Load button
 
 	// Get the actual text in the listbox
 	_getText = lbText [1503, _lbCurSel];
@@ -323,14 +340,17 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 
 	// Load the text
 	private _key = lbText [1503, (lbCurSel 1503)];
-	if (_key isEqualTo "") exitWith {systemChat "No preset selected to load"};
+	if (tolowerANSI _key isEqualTo "") exitWith {systemChat "No preset selected to load"};
 
 	private _aircraftSel = localNameSpace getVariable "PIG_airCraftSelected";
 	private _vehicleLocal = uiNamespace getVariable "PIG_JetMenu_vehicleLocal";
 
+	[_aircraftSel] call PIG_fnc_reloadLoadout;
+
 	// Check if it's a engine preset
-	if (_key in PIG_JetMenu_cfgPresets) then {
-		private _pylonsCfg = PIG_JetMenu_cfgPresets get _key;
+	if (tolowerANSI _key in PIG_JetMenu_cfgPresets) then {
+
+		private _pylonsCfg = PIG_JetMenu_cfgPresets get (tolowerANSI _key);
 		if (_pylonsCfg isEqualTo []) then {
 			// Reset to default
 			lbClear 1501;
@@ -394,7 +414,7 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 	params ["_control", "_newText"];
 
 	private _profilePresets = (profileNamespace getVariable "PIG_JetMenu_profilePresets");
-	if ((_newText in _profilePresets) || {_newText in PIG_JetMenu_cfgPresets}) then {
+	if ((_newText in _profilePresets) || {_newText in PIG_JetMenu_cfgPresets} || {toLowerANSI _newText in PIG_JetMenu_cfgPresets} || {toUpperANSI _newText in PIG_JetMenu_cfgPresets}) then {
 		// Disable save new preset
 		ctrlEnable [1605, false];
 		(displayCtrl 1605) ctrlSetTooltip "Invalid Name/Already Exists";
@@ -428,12 +448,25 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 	
 	_profilePresets set [_key, [_aircraftSel, _loadout], true]; // Set a new key
  
-	// Add to the list box
-	//lbAdd [1503, (ctrlText 1400)];
+	// Get cfg preset for this aircraft
+	lbClear 1503;
+	private _presetCfgPaths = configProperties [configFile >> "CfgVehicles" >> _aircraftSel >> "Components" >> "TransportPylonsComponent" >> "Presets", "isClass _x"];
 
-	[_aircraftSel] call PIG_fnc_reloadPresetsLb;
-	//_lastIndex = (count (profileNamespace getVariable "PIG_JetMenu_profilePresets") - 1); // last index added
-	//lbSetData [1503, _lastIndex, (ctrlText 1400)];
+	{
+		_presetName = (getText(_x >> "displayName"));
+		lbAdd [1503, _presetName];
+		// Put the attachaments in a hashmap
+		_attachs = (getArray(_x >> "attachment"));
+		PIG_JetMenu_cfgPresets set [_presetName, _attachs];
+	}forEach _presetCfgPaths;
+
+	{
+		// Ignore preset from another aircraft class
+		private _hashClass = (_y # 0);
+		if (_hashClass == _aircraftSel) then {
+			lbAdd [1503, _x];
+		};
+	}forEach _profilePresets;
 }];
 
 // Save existing preset
@@ -449,6 +482,7 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 	
 	private _loadout = PIG_jetLoadout;
 	_profilePresets set [_key, [_aircraftSel, _loadout]];
+
 	[_aircraftSel] call PIG_fnc_reloadPresetsLb;
 }];
 
@@ -464,9 +498,11 @@ if (isNil {(profileNamespace getVariable "PIG_JetMenu_profilePresets")}) then {(
 	private _aircraftSel = localNameSpace getVariable "PIG_airCraftSelected";
 	private _vehicleLocal = uiNamespace getVariable "PIG_JetMenu_vehicleLocal";
 
+	[_aircraftSel] call PIG_fnc_reloadLoadout;
+
 	// Cfg Preset
 	if (_key in PIG_JetMenu_cfgPresets) then {
-		private _pylonsCfg = PIG_JetMenu_cfgPresets get _key;
+		private _pylonsCfg = PIG_JetMenu_cfgPresets get (tolowerANSI _key);
 		if (_pylonsCfg isEqualTo []) then {
 			// Reset to default
 			lbClear 1501;
